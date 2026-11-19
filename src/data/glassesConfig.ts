@@ -62,10 +62,10 @@ export interface CartItem {
   unitPrice: number;
 }
 
-export const AMBASSADOR_IMAGE = '/src/assets/images/bts_ambassador_eyewear_1795071538818.jpg';
+export const AMBASSADOR_IMAGE = '/src/assets/images/bts_wearing_even_g2_1795072084069.jpg';
 
 export const STUDIO_IMAGES: Record<string, string> = {
-  'g2-a-grey': '/src/assets/images/g2_a_grey_studio_1795070557040.jpg',
+  'g2-a-grey': '/src/assets/images/jungkook_key_product_visual_1795072333313.jpg',
   'g2-b-grey': '/src/assets/images/g2_b_grey_studio_1795070557050.jpg',
   'green': '/src/assets/images/g2_green_studio_1795070557154.jpg',
   'brown': '/src/assets/images/g2_brown_studio_1795070557069.jpg',

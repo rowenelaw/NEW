@@ -96,7 +96,7 @@ export const StudioStage: React.FC<StudioStageProps> = ({
             onError={() =>
               setImgError((prev) => ({ ...prev, [activeImgSrc]: true }))
             }
-            className={`w-full h-full object-cover transition-all duration-300 ${
+            className={`w-full h-full object-cover object-top transition-all duration-300 ${
               stageMode === 'hud' ? 'brightness-[0.72] contrast-[1.06] scale-[1.02]' : ''
             }`}
           />

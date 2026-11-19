@@ -116,14 +116,14 @@ export const EcosystemHub: React.FC<EcosystemHubProps> = ({ onSelectBtsEdition }
         aria-labelledby="ambassador-heading"
       >
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch">
-          <div className="lg:col-span-7 relative rounded-2xl overflow-hidden bg-[#EAEAE6] border border-black/[0.06] min-h-[320px]">
+          <div className="lg:col-span-6 relative aspect-square rounded-2xl overflow-hidden bg-white border border-black/[0.06]">
             {!ambassadorImgError ? (
               <img
                 src={AMBASSADOR_IMAGE}
-                alt="BTS Global Brand Ambassador wearing Even G2 matte titanium smart glasses"
+                alt="BTS Global Brand Ambassadors wearing Even G2 matte titanium smart glasses"
                 referrerPolicy="no-referrer"
                 onError={() => setAmbassadorImgError(true)}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover object-top"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center p-10 text-center bg-gradient-to-br from-[#EAEAE6] to-[#D8D8D2]">
@@ -145,7 +145,7 @@ export const EcosystemHub: React.FC<EcosystemHubProps> = ({ onSelectBtsEdition }
             </div>
           </div>
 
-          <div className="lg:col-span-5 flex flex-col justify-between p-6 md:p-8 rounded-2xl bg-white border border-black/[0.07]">
+          <div className="lg:col-span-6 flex flex-col justify-between p-6 md:p-8 rounded-2xl bg-white border border-black/[0.07]">
             <div>
               <p className="text-[12px] font-medium text-[#6D28D9]">
                 BTS × Even Realities · Global Brand Ambassador
