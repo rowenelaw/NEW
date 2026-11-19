@@ -28,22 +28,22 @@ export const Header: React.FC<HeaderProps> = ({ bagCount, onOpenBag }) => {
             Even G2
           </a>
           <a
+            href="#ambassador"
+            className="hover:text-[#141413] transition-colors whitespace-nowrap shrink-0 py-1 border-b border-transparent hover:border-[#141413]"
+          >
+            Ambassador
+          </a>
+          <a
+            href="#community"
+            className="hover:text-[#141413] transition-colors whitespace-nowrap shrink-0 py-1 border-b border-transparent hover:border-[#141413]"
+          >
+            Leaderboard
+          </a>
+          <a
             href="#geometry"
             className="hover:text-[#141413] transition-colors whitespace-nowrap shrink-0 py-1 border-b border-transparent hover:border-[#141413]"
           >
-            Geometry
-          </a>
-          <a
-            href="#optics"
-            className="hover:text-[#141413] transition-colors whitespace-nowrap shrink-0 py-1 border-b border-transparent hover:border-[#141413]"
-          >
             Optics
-          </a>
-          <a
-            href="#included"
-            className="hover:text-[#141413] transition-colors whitespace-nowrap shrink-0 py-1 border-b border-transparent hover:border-[#141413]"
-          >
-            Included
           </a>
         </nav>
 

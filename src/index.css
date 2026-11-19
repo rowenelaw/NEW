@@ -28,9 +28,29 @@
   font-variant-numeric: tabular-nums;
 }
 
+@keyframes buyFlash {
+  0%, 100% {
+    opacity: 1;
+    filter: brightness(1);
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.84;
+    filter: brightness(1.16);
+    transform: scale(1.01);
+  }
+}
+
+.animate-buy-flash {
+  animation: buyFlash 1.25s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+  .animate-buy-flash {
+    animation: none !important;
   }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, Layers, Sparkles } from 'lucide-react';
+import { Eye, Layers, Sparkles, Zap } from 'lucide-react';
 import {
   COLORS,
   ConfigurationState,
@@ -9,12 +9,14 @@ import {
 } from '../data/glassesConfig';
 
 export type StageMode = 'studio' | 'hud' | 'kit';
-type HudAppMode = 'navigation' | 'teleprompt' | 'translate' | 'quicknote';
+type HudAppMode = 'navigation' | 'teleprompt' | 'translate' | 'hawker-quest';
 
 interface StudioStageProps {
   config: ConfigurationState;
   stageMode: StageMode;
   onChangeStageMode: (mode: StageMode) => void;
+  totalPrice: number;
+  onOneClickBuy: () => void;
 }
 
 const HUD_PREVIEWS: Record<
@@ -40,24 +42,24 @@ const HUD_PREVIEWS: Record<
   },
   translate: {
     label: 'Translate',
-    header: 'DE → EN · Live Caption',
+    header: 'KR → EN · Live Caption',
     lines: [
-      '"Die neue Magnesium-Titan-Fassung wiegt',
-      'nur sechsunddreißig Gramm."',
-      '→ The new magnesium-titanium frame',
-      'weighs only thirty-six grams.',
+      '"이븐 리얼리티즈 안경은 정말 가볍고',
+      '매일 착용하기에 완벽합니다."',
+      '→ Even Realities glasses feel remarkably',
+      'lightweight and effortless for daily wear.',
     ],
     footer: 'Low-latency microphone active',
   },
-  quicknote: {
-    label: 'QuickNote',
-    header: 'Voice Memo · 09:38',
+  'hawker-quest': {
+    label: 'Hawker Quest',
+    header: 'Add-On Game App · Maxwell Food Centre',
     lines: [
-      '• Confirm 1.74 lens bevel tolerances',
-      '• Review anodized sage hinge samples',
-      '• Book Thursday flight to Munich',
+      '• Stall #01-10 Checked In (+120 XP)',
+      '• Friend Streak: 14 Days Active with Minji K.',
+      '• Rank #3 Citywide · 64 Unique Stalls',
     ],
-    footer: 'Synced to Even App',
+    footer: 'ARMY Pioneer Badge Equipped',
   },
 };
 
@@ -65,6 +67,8 @@ export const StudioStage: React.FC<StudioStageProps> = ({
   config,
   stageMode,
   onChangeStageMode,
+  totalPrice,
+  onOneClickBuy,
 }) => {
   const [hudMode, setHudMode] = useState<HudAppMode>('navigation');
   const [imgError, setImgError] = useState<Record<string, boolean>>({});
@@ -131,12 +135,12 @@ export const StudioStage: React.FC<StudioStageProps> = ({
 
         {/* HUD Waveguide Simulation Overlay */}
         {stageMode === 'hud' && (
-          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/35 to-black/25 flex flex-col justify-between p-5 md:p-7">
-            <div className="flex items-center justify-between gap-3">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/35 to-black/25 flex flex-col justify-between p-4 md:p-6">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="text-[12px] font-medium text-white/85 tracking-wide">
                 HaLo Waveguide Projection · 640 × 200 px
               </div>
-              <div className="flex items-center gap-1 bg-black/50 backdrop-blur-md p-1 rounded-lg border border-white/10">
+              <div className="flex items-center gap-1 bg-black/55 backdrop-blur-md p-1 rounded-lg border border-white/10">
                 {(Object.keys(HUD_PREVIEWS) as HudAppMode[]).map((mode) => (
                   <button
                     key={mode}
@@ -154,7 +158,7 @@ export const StudioStage: React.FC<StudioStageProps> = ({
               </div>
             </div>
 
-            <div className="mx-auto w-full max-w-md rounded-xl bg-black/70 backdrop-blur-md border border-[#52D97E]/30 px-5 py-4 shadow-lg">
+            <div className="mx-auto w-full max-w-md rounded-xl bg-black/75 backdrop-blur-md border border-[#52D97E]/30 px-5 py-4 shadow-lg">
               <div className="font-mono-tech text-[11px] text-[#7CF0A0]/80 pb-2 mb-2.5 border-b border-[#52D97E]/20 flex items-center justify-between gap-2">
                 <span>{activeHud.header}</span>
                 <span>1,000 nits</span>
@@ -177,17 +181,17 @@ export const StudioStage: React.FC<StudioStageProps> = ({
 
         {/* Bottom Caption Scrim in Studio / Kit Mode */}
         {stageMode !== 'hud' && (
-          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 via-black/20 to-transparent px-5 py-4 flex items-end justify-between gap-4">
+          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 via-black/25 to-transparent px-5 py-4 flex items-end justify-between gap-4">
             <div className="text-white">
               <p className="font-display text-[14px] font-medium leading-tight">
                 {stageMode === 'kit'
-                  ? 'Even G2 Kit · Clip-On & Even R1 Ring'
+                  ? 'Even G2 Kit · Free Charging Case, Clip-On & Even R1 Ring'
                   : `${frame.name} — ${color.name}`}
               </p>
               <p className="text-[12px] text-white/80 mt-0.5">
                 {stageMode === 'kit'
-                  ? 'Polarized magnetic sun clip, leather case, and ceramic-titanium ring'
-                  : `${frame.silhouette} · ${color.finish}`}
+                  ? 'Includes complimentary wireless charging case ($79 value) & express delivery'
+                  : `${frame.silhouette} · ${color.finish} · Free Case & Delivery Included`}
               </p>
             </div>
             {(config.includeClip || config.includeRing) && stageMode === 'studio' && (
@@ -202,6 +206,16 @@ export const StudioStage: React.FC<StudioStageProps> = ({
           </div>
         )}
       </div>
+
+      {/* Duplicate Buy now with 1-Click Button below first image */}
+      <button
+        type="button"
+        onClick={onOneClickBuy}
+        className="w-full h-13 px-6 rounded-xl bg-[#16A34A] hover:bg-[#15803D] text-white font-display text-[15px] font-bold tracking-tight transition-colors whitespace-nowrap inline-flex items-center justify-center gap-2 shadow-sm cursor-pointer animate-buy-flash focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F7F7F5]"
+      >
+        <Zap className="w-4 h-4 fill-current" aria-hidden="true" />
+        <span className="font-bold">Buy now with 1-Click — ${totalPrice}</span>
+      </button>
 
       {/* Stage Mode Switcher & Optical Spec Strip */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -236,7 +250,7 @@ export const StudioStage: React.FC<StudioStageProps> = ({
             }`}
           >
             <Sparkles className="w-3.5 h-3.5" aria-hidden="true" />
-            <span>HUD Display</span>
+            <span>HUD &amp; Game App</span>
           </button>
           <button
             type="button"
@@ -250,7 +264,7 @@ export const StudioStage: React.FC<StudioStageProps> = ({
             }`}
           >
             <Layers className="w-3.5 h-3.5" aria-hidden="true" />
-            <span>Clip &amp; Ring Kit</span>
+            <span>Free Case &amp; Kit</span>
           </button>
         </div>
 

@@ -51,14 +51,18 @@ export interface ConfigurationState {
   includeRing: boolean;
   ringFinish: RingFinishId;
   ringSize: number;
+  includeGameApp: boolean;
 }
 
 export interface CartItem {
   uid: string;
   config: ConfigurationState;
   quantity: number;
+  originalUnitPrice: number;
   unitPrice: number;
 }
+
+export const AMBASSADOR_IMAGE = '/src/assets/images/bts_ambassador_eyewear_1795071538818.jpg';
 
 export const STUDIO_IMAGES: Record<string, string> = {
   'g2-a-grey': '/src/assets/images/g2_a_grey_studio_1795070557040.jpg',
@@ -151,9 +155,11 @@ export const LENS_OPTIONS = [
   },
 ];
 
+export const DISCOUNT_RATE = 0.2;
 export const HIGH_INDEX_PRICE = 80;
 export const CLIP_ON_PRICE = 99;
 export const RING_PRICE = 249;
+export const GAME_APP_VALUE = 29;
 
 export const CLIP_TINTS: { id: ClipTintId; name: string; swatch: string; transmission: string }[] = [
   { id: 'dark-grey', name: 'Classic Dark Grey', swatch: '#28292B', transmission: '14% VLT · Polarized' },
@@ -211,6 +217,7 @@ export const DEFAULT_CONFIG: ConfigurationState = {
   includeRing: false,
   ringFinish: 'brushed-silver',
   ringSize: 9,
+  includeGameApp: true,
 };
 
 export function calculatePrice(config: ConfigurationState) {
@@ -222,15 +229,166 @@ export function calculatePrice(config: ConfigurationState) {
   const clipDelta = config.includeClip ? CLIP_ON_PRICE : 0;
   const ringDelta = config.includeRing ? RING_PRICE : 0;
 
+  const originalTotal =
+    frame.basePrice + color.priceDelta + lensDelta + highIndexDelta + clipDelta + ringDelta;
+  const discountedTotal = Math.round(originalTotal * (1 - DISCOUNT_RATE));
+  const savingsAmount = originalTotal - discountedTotal;
+
   return {
     base: frame.basePrice + color.priceDelta,
+    discountedBase: Math.round((frame.basePrice + color.priceDelta) * (1 - DISCOUNT_RATE)),
     lens: lensDelta,
     highIndex: highIndexDelta,
     clip: clipDelta,
     ring: ringDelta,
-    total: frame.basePrice + color.priceDelta + lensDelta + highIndexDelta + clipDelta + ringDelta,
+    originalTotal,
+    savingsAmount,
+    total: discountedTotal,
   };
 }
+
+export interface HawkerLeaderEntry {
+  id: string;
+  explorer: string;
+  badgeName: string;
+  stallsVisitedWeek: number;
+  stallsVisitedAllTime: number;
+  visitsWeek: number;
+  visitsAllTime: number;
+  favoriteCentre: string;
+  streakDays: number;
+  isCurrentUser?: boolean;
+}
+
+export const INITIAL_HAWKER_LEADERBOARD: HawkerLeaderEntry[] = [
+  {
+    id: 'u1',
+    explorer: 'minji.kopi',
+    badgeName: 'Borahae Optical',
+    stallsVisitedWeek: 18,
+    stallsVisitedAllTime: 94,
+    visitsWeek: 31,
+    visitsAllTime: 248,
+    favoriteCentre: 'Maxwell Food Centre',
+    streakDays: 29,
+  },
+  {
+    id: 'u2',
+    explorer: 'kenji.sg',
+    badgeName: 'Hawker Trailblazer',
+    stallsVisitedWeek: 15,
+    stallsVisitedAllTime: 82,
+    visitsWeek: 24,
+    visitsAllTime: 196,
+    favoriteCentre: 'Tiong Bahru Market',
+    streakDays: 21,
+  },
+  {
+    id: 'u3',
+    explorer: 'rowene',
+    badgeName: 'ARMY Pioneer',
+    stallsVisitedWeek: 12,
+    stallsVisitedAllTime: 64,
+    visitsWeek: 19,
+    visitsAllTime: 142,
+    favoriteCentre: 'Old Airport Road',
+    streakDays: 14,
+    isCurrentUser: true,
+  },
+  {
+    id: 'u4',
+    explorer: 'wei.teng',
+    badgeName: '7-Star Explorer',
+    stallsVisitedWeek: 10,
+    stallsVisitedAllTime: 53,
+    visitsWeek: 16,
+    visitsAllTime: 118,
+    favoriteCentre: 'Lau Pa Sat',
+    streakDays: 12,
+  },
+  {
+    id: 'u5',
+    explorer: 'sara.owndays',
+    badgeName: 'OWNDAYS Insider',
+    stallsVisitedWeek: 8,
+    stallsVisitedAllTime: 41,
+    visitsWeek: 13,
+    visitsAllTime: 97,
+    favoriteCentre: 'Chinatown Complex',
+    streakDays: 9,
+  },
+];
+
+export interface ArmyBadge {
+  id: string;
+  name: string;
+  criteria: string;
+  unlocked: boolean;
+  accent: string;
+}
+
+export const ARMY_BADGES: ArmyBadge[] = [
+  {
+    id: 'army-pioneer',
+    name: 'ARMY Pioneer',
+    criteria: 'BTS Global Ambassador Edition early frame selector',
+    unlocked: true,
+    accent: '#6D28D9',
+  },
+  {
+    id: 'borahae-optical',
+    name: 'Borahae Optical',
+    criteria: 'Complete 7 consecutive Friend Streak HUD check-ins',
+    unlocked: true,
+    accent: '#7C3AED',
+  },
+  {
+    id: 'hawker-trailblazer',
+    name: 'Hawker Trailblazer',
+    criteria: 'Visit 50 unique hawker stalls with Even Quest active',
+    unlocked: true,
+    accent: '#15803D',
+  },
+  {
+    id: 'seven-star',
+    name: '7-Star Collector',
+    criteria: 'Refer 1 friend via OWNDAYS Bring a Friend & hit 15-day streak',
+    unlocked: false,
+    accent: '#5A5A56',
+  },
+];
+
+export interface FriendStreakPeer {
+  id: string;
+  name: string;
+  streakDays: number;
+  checkedInToday: boolean;
+  lastStall: string;
+}
+
+export const INITIAL_FRIENDS_STREAK: FriendStreakPeer[] = [
+  {
+    id: 'f1',
+    name: 'Minji K.',
+    streakDays: 29,
+    checkedInToday: true,
+    lastStall: 'Tian Tian Chicken Rice · Maxwell',
+  },
+  {
+    id: 'f2',
+    name: 'Darren L.',
+    streakDays: 14,
+    checkedInToday: true,
+    lastStall: 'Jian Bo Shui Kueh · Tiong Bahru',
+  },
+  {
+    id: 'f3',
+    name: 'Hana T.',
+    streakDays: 11,
+    checkedInToday: false,
+    lastStall: 'Nam Sing Hokkien Mee · Old Airport',
+  },
+];
 
 export const TECHNICAL_SPECS = [
   {
@@ -246,20 +404,20 @@ export const TECHNICAL_SPECS = [
   {
     category: 'Power & Case',
     title: '1.5-Day Continuous Runtime',
-    detail: 'Dual 80 mAh temple cells supported by a USB-C magnetic charging case holding up to 2.5 full recharges.',
+    detail: 'Dual 80 mAh temple cells supported by a complimentary USB-C magnetic charging case holding 2.5 full recharges.',
   },
   {
     category: 'Acoustics & Control',
     title: 'Dual-Mic Beamforming + Touch',
-    detail: 'Capacitive temple touchbars for instant Teleprompt, Translate, and QuickNote control alongside Even R1 ring gestures.',
+    detail: 'Capacitive temple touchbars for instant Teleprompt, Translate, and Even Hawker Quest control alongside Even R1 ring gestures.',
   },
 ];
 
 export const IN_THE_BOX = [
   'Even G2 Smart Glasses in your selected frame & finish',
-  'Wireless magnetic charging case (matte charcoal)',
+  'Complimentary wireless magnetic charging case ($79 value)',
   'Braided USB-C to USB-C charging cable',
   'Microfiber optical cleaning cloth & care booklet',
+  'Even Hawker Quest AR Game App license & ARMY Pioneer profile badge',
   'Custom protective clip-on pouch (with Clip-On selection)',
-  'Even R1 wireless charging dock (with Ring selection)',
 ];

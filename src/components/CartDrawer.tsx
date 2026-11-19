@@ -13,6 +13,14 @@ interface CartDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   items: CartItem[];
+  oneClickOrderSummary: {
+    orderId: string;
+    frameLabel: string;
+    originalPrice: number;
+    finalPrice: number;
+    includeGameApp: boolean;
+  } | null;
+  onDismissOneClick: () => void;
   onUpdateQuantity: (uid: string, delta: number) => void;
   onRemoveItem: (uid: string) => void;
   onClearBag: () => void;
@@ -22,6 +30,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   isOpen,
   onClose,
   items,
+  oneClickOrderSummary,
+  onDismissOneClick,
   onUpdateQuantity,
   onRemoveItem,
   onClearBag,
@@ -44,18 +54,27 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   }, [isOpen, onClose]);
 
   useEffect(() => {
-    if (isOpen && items.length > 0 && step === 'confirmed') {
+    if (isOpen && items.length > 0 && step === 'confirmed' && !oneClickOrderSummary) {
       setStep('bag');
     }
-  }, [isOpen, items.length, step]);
+  }, [isOpen, items.length, step, oneClickOrderSummary]);
 
   if (!isOpen) return null;
 
   const subtotal = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
+  const originalSubtotal = items.reduce(
+    (sum, item) => sum + item.originalUnitPrice * item.quantity,
+    0
+  );
 
   const handleCheckoutSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!customerName.trim() || !customerEmail.trim() || !shippingAddress.trim() || !cityPostal.trim()) {
+    if (
+      !customerName.trim() ||
+      !customerEmail.trim() ||
+      !shippingAddress.trim() ||
+      !cityPostal.trim()
+    ) {
       setFormError('Please complete all required shipping fields.');
       return;
     }
@@ -79,13 +98,18 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
         {/* Header */}
         <div className="px-6 py-5 border-b border-black/[0.08] flex items-center justify-between gap-4">
           <h2 className="font-display text-[17px] font-semibold text-[#141413]">
-            {step === 'bag' && 'Your Bag'}
-            {step === 'checkout' && 'Express Checkout'}
-            {step === 'confirmed' && 'Order Confirmed'}
+            {oneClickOrderSummary || step === 'confirmed'
+              ? 'Order Confirmed'
+              : step === 'checkout'
+              ? 'Express Checkout'
+              : 'Your Bag'}
           </h2>
           <button
             type="button"
-            onClick={onClose}
+            onClick={() => {
+              if (oneClickOrderSummary) onDismissOneClick();
+              onClose();
+            }}
             aria-label="Close bag"
             className="w-9 h-9 rounded-lg flex items-center justify-center text-[#5A5A56] hover:text-[#141413] hover:bg-[#EAEAE6] transition-colors cursor-pointer"
           >
@@ -95,9 +119,61 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
         {/* Body */}
         <div className="flex-1 overflow-y-auto px-6 py-6">
-          {step === 'confirmed' ? (
+          {oneClickOrderSummary ? (
+            <div className="py-6 space-y-5">
+              <div className="w-11 h-11 rounded-full bg-[#16A34A]/15 text-[#15803D] flex items-center justify-center">
+                <CheckCircle2 className="w-6 h-6" aria-hidden="true" />
+              </div>
+              <div>
+                <h3 className="font-display text-[22px] font-semibold text-[#141413]">
+                  1-Click Order #{oneClickOrderSummary.orderId} Confirmed
+                </h3>
+                <p className="text-[14px] text-[#5A5A56] mt-2 leading-relaxed">
+                  Instant checkout completed for {oneClickOrderSummary.frameLabel}. Your 20% launch savings, free express delivery, and free charging case have been locked in.
+                </p>
+              </div>
+              <div className="p-4 rounded-xl bg-white border border-black/[0.08] text-[13px] space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-[#6B6B68]">Original Price</span>
+                  <span className="font-mono-tech text-[#6B6B68] line-through">
+                    ${oneClickOrderSummary.originalPrice}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#6B6B68]">20% Discounted Total</span>
+                  <span className="font-mono-tech font-bold text-[#DC2626]">
+                    ${oneClickOrderSummary.finalPrice}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#6B6B68]">Express Delivery</span>
+                  <span className="text-[#15803D] font-medium">Free</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#6B6B68]">Wireless Charging Case</span>
+                  <span className="text-[#15803D] font-medium">Free Included</span>
+                </div>
+                {oneClickOrderSummary.includeGameApp && (
+                  <div className="flex justify-between">
+                    <span className="text-[#6B6B68]">Even Hawker Quest App</span>
+                    <span className="text-[#15803D] font-medium">Activated</span>
+                  </div>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  onDismissOneClick();
+                  onClose();
+                }}
+                className="w-full h-11 rounded-xl bg-[#141413] text-[#F7F7F5] text-[13px] font-semibold hover:bg-[#2C2C2A] transition-colors cursor-pointer"
+              >
+                Done
+              </button>
+            </div>
+          ) : step === 'confirmed' ? (
             <div className="py-8 space-y-5">
-              <div className="w-11 h-11 rounded-full bg-[#2D6A4F]/10 text-[#2D6A4F] flex items-center justify-center">
+              <div className="w-11 h-11 rounded-full bg-[#16A34A]/15 text-[#15803D] flex items-center justify-center">
                 <CheckCircle2 className="w-6 h-6" aria-hidden="true" />
               </div>
               <div>
@@ -105,7 +181,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   Order #{orderNumber} Confirmed
                 </h3>
                 <p className="text-[14px] text-[#5A5A56] mt-2 leading-relaxed">
-                  Thank you, {customerName}. Your custom Even G2 configuration is queued for optical verification and dispatch to {shippingAddress}, {cityPostal}.
+                  Thank you, {customerName}. Your custom Even G2 configuration is queued for optical verification and free express dispatch to {shippingAddress}, {cityPostal}.
                 </p>
               </div>
               <div className="p-4 rounded-xl bg-white border border-black/[0.08] text-[13px] space-y-1.5">
@@ -114,8 +190,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   <span className="text-[#141413] font-medium">{customerEmail}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#6B6B68]">Estimated Dispatch</span>
-                  <span className="text-[#141413] font-medium">2–3 Weeks · Express</span>
+                  <span className="text-[#6B6B68]">Delivery &amp; Charging Case</span>
+                  <span className="text-[#15803D] font-medium">Complimentary</span>
                 </div>
               </div>
               <button
@@ -164,9 +240,14 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                           <h3 className="font-display text-[14px] font-semibold text-[#141413]">
                             {frame.name} · {color.name}
                           </h3>
-                          <span className="font-mono-tech text-[13px] font-medium text-[#141413] shrink-0">
-                            ${item.unitPrice * item.quantity}
-                          </span>
+                          <div className="text-right shrink-0">
+                            <span className="block font-mono-tech text-[11px] text-[#6B6B68] line-through">
+                              ${item.originalUnitPrice * item.quantity}
+                            </span>
+                            <span className="font-mono-tech text-[13px] font-bold text-[#DC2626]">
+                              ${item.unitPrice * item.quantity}
+                            </span>
+                          </div>
                         </div>
                         <ul className="text-[12px] text-[#5A5A56] mt-1 space-y-0.5">
                           <li>
@@ -174,9 +255,10 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                               ? `Single-Vision Rx (OD ${item.config.prescription.odSph} / OS ${item.config.prescription.osSph}, PD ${item.config.prescription.pd} mm)`
                               : 'Non-Prescription Clear Waveguide'}
                           </li>
-                          {item.config.lensType === 'single-vision' && item.config.prescription.highIndex && (
-                            <li>1.74 Ultra-Thin High-Index</li>
-                          )}
+                          {item.config.lensType === 'single-vision' &&
+                            item.config.prescription.highIndex && (
+                              <li>1.74 Ultra-Thin High-Index</li>
+                            )}
                           {item.config.includeClip && (
                             <li>Sun Clip-On ({clipTint?.name})</li>
                           )}
@@ -185,6 +267,10 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                               Even R1 Ring ({ringFinish?.name} · US {item.config.ringSize})
                             </li>
                           )}
+                          {item.config.includeGameApp && (
+                            <li className="text-[#15803D]">Even Hawker Quest Game App (Free)</li>
+                          )}
+                          <li className="text-[#15803D]">Free Wireless Charging Case &amp; Delivery</li>
                         </ul>
                       </div>
                     </div>
@@ -277,18 +363,27 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
         </div>
 
         {/* Footer */}
-        {items.length > 0 && step !== 'confirmed' && (
+        {items.length > 0 && step !== 'confirmed' && !oneClickOrderSummary && (
           <div className="px-6 py-5 border-t border-black/[0.08] bg-white space-y-4">
             <div className="space-y-1.5 text-[13px]">
               <div className="flex justify-between text-[#5A5A56]">
-                <span>Express Shipping</span>
-                <span className="text-[#2D6A4F] font-medium">Complimentary</span>
+                <span>Express Delivery &amp; Charging Case</span>
+                <span className="text-[#15803D] font-medium">Free</span>
+              </div>
+              <div className="flex justify-between text-[#DC2626] font-medium">
+                <span>20% Discount</span>
+                <span className="font-mono-tech">-${originalSubtotal - subtotal}</span>
               </div>
               <div className="flex justify-between items-baseline pt-1">
                 <span className="font-display font-semibold text-[#141413]">Subtotal</span>
-                <span className="font-display text-[18px] font-semibold text-[#141413] tabular-nums">
-                  ${subtotal}
-                </span>
+                <div className="flex items-baseline gap-2">
+                  <span className="font-mono-tech text-[13px] text-[#6B6B68] line-through">
+                    ${originalSubtotal}
+                  </span>
+                  <span className="font-display text-[18px] font-bold text-[#DC2626] tabular-nums">
+                    ${subtotal}
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -312,7 +407,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 <button
                   type="submit"
                   form="checkout-form"
-                  className="flex-1 h-11 rounded-xl bg-[#141413] hover:bg-[#2C2C2A] text-[#F7F7F5] font-display text-[14px] font-semibold transition-colors cursor-pointer"
+                  className="flex-1 h-11 rounded-xl bg-[#16A34A] hover:bg-[#15803D] text-white font-display text-[14px] font-bold transition-colors cursor-pointer"
                 >
                   Place Order — ${subtotal}
                 </button>

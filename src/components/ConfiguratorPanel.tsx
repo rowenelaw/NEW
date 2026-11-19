@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check, Info, RotateCcw } from 'lucide-react';
+import { Check, Gamepad2, Info, PackageCheck, RotateCcw, Truck, Zap } from 'lucide-react';
 import {
   calculatePrice,
   CLIP_ON_PRICE,
@@ -8,6 +8,7 @@ import {
   ConfigurationState,
   CYL_VALUES,
   FRAMES,
+  GAME_APP_VALUE,
   HIGH_INDEX_PRICE,
   LENS_OPTIONS,
   PD_VALUES,
@@ -24,6 +25,7 @@ interface ConfiguratorPanelProps {
   onChange: (updater: (prev: ConfigurationState) => ConfigurationState) => void;
   onReset: () => void;
   onAddToBag: () => void;
+  onOneClickBuy: () => void;
   onOpenRingGuide: () => void;
   onSwitchStageMode: (mode: StageMode) => void;
   justAdded: boolean;
@@ -34,6 +36,7 @@ export const ConfiguratorPanel: React.FC<ConfiguratorPanelProps> = ({
   onChange,
   onReset,
   onAddToBag,
+  onOneClickBuy,
   onOpenRingGuide,
   onSwitchStageMode,
   justAdded,
@@ -54,27 +57,43 @@ export const ConfiguratorPanel: React.FC<ConfiguratorPanelProps> = ({
 
   return (
     <div className="flex flex-col">
-      {/* Header & Live Price */}
+      {/* Header & Loss-Avoidance 20% Discount Pricing */}
       <div className="pb-6 border-b border-black/[0.08]">
-        <div className="flex items-baseline justify-between gap-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-4">
           <h1
             className="font-display text-[28px] md:text-[32px] font-semibold tracking-tight text-[#141413] leading-[1.15]"
             style={{ textWrap: 'balance' }}
           >
             Select Your Even G2
           </h1>
-          <span className="font-display text-[24px] font-semibold text-[#141413] tabular-nums shrink-0">
-            ${pricing.total}
+
+          <div className="flex items-baseline gap-2.5 shrink-0">
+            <span className="font-mono-tech text-[17px] text-[#6B6B68] line-through">
+              ${pricing.originalTotal}
+            </span>
+            <span className="font-display text-[28px] font-bold text-[#DC2626] tabular-nums">
+              ${pricing.total}
+            </span>
+          </div>
+        </div>
+
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[13px]">
+          <span className="font-semibold text-[#DC2626]">
+            20% Discount Applied · Save ${pricing.savingsAmount} today
+          </span>
+          <span className="text-[#5A5A56]">
+            Free delivery · Free charging case included
           </span>
         </div>
-        <p className="text-[14px] text-[#5A5A56] mt-2 leading-relaxed">
-          Display smart glasses engineered into an ultra-light optical frame. Free express shipping in 2–3 weeks.
+
+        <p className="text-[14px] text-[#5A5A56] mt-2.5 leading-relaxed">
+          Display smart glasses engineered into an ultra-light optical frame. Includes complimentary wireless charging case and express shipping.
         </p>
       </div>
 
       {/* 01. Frame Style */}
-      <section className="py-7 border-b border-black/[0.08]" aria-labelledby="step-frame">
-        <div className="flex items-baseline justify-between gap-4 mb-4">
+      <section className="py-6 border-b border-black/[0.08]" aria-labelledby="step-frame">
+        <div className="flex items-baseline justify-between gap-4 mb-3.5">
           <h2 id="step-frame" className="font-display text-[15px] font-semibold text-[#141413]">
             01. Frame Shape
           </h2>
@@ -86,6 +105,7 @@ export const ConfiguratorPanel: React.FC<ConfiguratorPanelProps> = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {FRAMES.map((frame) => {
             const active = config.frameId === frame.id;
+            const discountedFramePrice = Math.round(frame.basePrice * 0.8);
             return (
               <button
                 key={frame.id}
@@ -126,9 +146,10 @@ export const ConfiguratorPanel: React.FC<ConfiguratorPanelProps> = ({
                       </>
                     )}
                   </svg>
-                  <span className="font-mono-tech text-[12px] text-[#5A5A56]">
-                    ${frame.basePrice}
-                  </span>
+                  <div className="flex items-baseline gap-1.5 font-mono-tech text-[12px]">
+                    <span className="text-[#6B6B68] line-through">${frame.basePrice}</span>
+                    <span className="font-semibold text-[#DC2626]">${discountedFramePrice}</span>
+                  </div>
                 </div>
                 <div className="font-display text-[15px] font-semibold text-[#141413]">
                   {frame.name}
@@ -143,8 +164,8 @@ export const ConfiguratorPanel: React.FC<ConfiguratorPanelProps> = ({
       </section>
 
       {/* 02. Frame Color */}
-      <section className="py-7 border-b border-black/[0.08]" aria-labelledby="step-color">
-        <div className="flex items-baseline justify-between gap-4 mb-4">
+      <section className="py-6 border-b border-black/[0.08]" aria-labelledby="step-color">
+        <div className="flex items-baseline justify-between gap-4 mb-3.5">
           <h2 id="step-color" className="font-display text-[15px] font-semibold text-[#141413]">
             02. Frame Finish
           </h2>
@@ -194,8 +215,8 @@ export const ConfiguratorPanel: React.FC<ConfiguratorPanelProps> = ({
       </section>
 
       {/* 03. Lens & Prescription */}
-      <section className="py-7 border-b border-black/[0.08]" aria-labelledby="step-lens">
-        <div className="flex items-baseline justify-between gap-4 mb-4">
+      <section className="py-6 border-b border-black/[0.08]" aria-labelledby="step-lens">
+        <div className="flex items-baseline justify-between gap-4 mb-3.5">
           <h2 id="step-lens" className="font-display text-[15px] font-semibold text-[#141413]">
             03. Lens &amp; Prescription
           </h2>
@@ -244,9 +265,7 @@ export const ConfiguratorPanel: React.FC<ConfiguratorPanelProps> = ({
               </span>
             </div>
 
-            {/* OD & OS Matrix */}
             <div className="space-y-3">
-              {/* Right Eye (OD) */}
               <div className="grid grid-cols-4 gap-2 items-end">
                 <div className="text-[12px] font-medium text-[#141413] pb-2">
                   Right (OD)
@@ -292,7 +311,6 @@ export const ConfiguratorPanel: React.FC<ConfiguratorPanelProps> = ({
                 </label>
               </div>
 
-              {/* Left Eye (OS) */}
               <div className="grid grid-cols-4 gap-2 items-end">
                 <div className="text-[12px] font-medium text-[#141413] pb-2">
                   Left (OS)
@@ -339,7 +357,6 @@ export const ConfiguratorPanel: React.FC<ConfiguratorPanelProps> = ({
               </div>
             </div>
 
-            {/* PD + High-Index Option */}
             <div className="pt-3 border-t border-black/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <label className="flex items-center gap-2.5">
                 <span className="text-[12px] font-medium text-[#141413] whitespace-nowrap">
@@ -373,8 +390,8 @@ export const ConfiguratorPanel: React.FC<ConfiguratorPanelProps> = ({
       </section>
 
       {/* 04. Sun Clip-On */}
-      <section className="py-7 border-b border-black/[0.08]" aria-labelledby="step-clip">
-        <div className="flex items-baseline justify-between gap-4 mb-4">
+      <section className="py-6 border-b border-black/[0.08]" aria-labelledby="step-clip">
+        <div className="flex items-baseline justify-between gap-4 mb-3.5">
           <h2 id="step-clip" className="font-display text-[15px] font-semibold text-[#141413]">
             04. Sun Clip-On Shades
           </h2>
@@ -462,8 +479,8 @@ export const ConfiguratorPanel: React.FC<ConfiguratorPanelProps> = ({
       </section>
 
       {/* 05. Even R1 Companion Ring */}
-      <section className="py-7 border-b border-black/[0.08]" aria-labelledby="step-ring">
-        <div className="flex items-baseline justify-between gap-4 mb-4">
+      <section className="py-6 border-b border-black/[0.08]" aria-labelledby="step-ring">
+        <div className="flex items-baseline justify-between gap-4 mb-3.5">
           <h2 id="step-ring" className="font-display text-[15px] font-semibold text-[#141413]">
             05. Companion Control — Even R1 Ring
           </h2>
@@ -583,8 +600,90 @@ export const ConfiguratorPanel: React.FC<ConfiguratorPanelProps> = ({
         )}
       </section>
 
-      {/* Summary & Primary CTA */}
-      <div className="pt-7 space-y-5">
+      {/* 06. Add-on Game App (Loss Avoidance Bundle Bonus) */}
+      <section className="py-6 border-b border-black/[0.08]" aria-labelledby="step-game">
+        <div className="flex items-baseline justify-between gap-4 mb-3.5">
+          <h2 id="step-game" className="font-display text-[15px] font-semibold text-[#141413]">
+            06. Add-On Game App — Even Hawker Quest
+          </h2>
+          <button
+            type="button"
+            onClick={() => onSwitchStageMode('hud')}
+            className="text-[12px] font-medium text-[#15803D] hover:underline underline-offset-4 cursor-pointer whitespace-nowrap shrink-0"
+          >
+            Preview in HUD
+          </button>
+        </div>
+
+        <button
+          type="button"
+          onClick={() =>
+            onChange((prev) => ({ ...prev, includeGameApp: !prev.includeGameApp }))
+          }
+          aria-pressed={config.includeGameApp}
+          className={`w-full text-left p-4 rounded-xl border transition-all duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413] ${
+            config.includeGameApp
+              ? 'bg-white border-[#141413] shadow-xs'
+              : 'bg-[#EFEFED] border-black/[0.06] hover:border-black/25'
+          }`}
+        >
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2.5">
+              <Gamepad2 className="w-4 h-4 text-[#141413]" aria-hidden="true" />
+              <span className="font-display text-[14px] font-semibold text-[#141413]">
+                Include Even Hawker Quest AR Game App
+              </span>
+            </div>
+            <div className="flex items-baseline gap-1.5 font-mono-tech text-[12px] shrink-0">
+              <span className="text-[#6B6B68] line-through">${GAME_APP_VALUE}</span>
+              <span className="font-semibold text-[#15803D]">
+                {config.includeGameApp ? 'Free Bundle' : 'Skipped'}
+              </span>
+            </div>
+          </div>
+          <p className="text-[12px] text-[#5A5A56] mt-1.5 leading-relaxed">
+            Unlock live Hawker Stall check-ins, Friend Streaks, OWNDAYS referral rewards, and collectible ARMY Badges inside your waveguide HUD.
+          </p>
+        </button>
+      </section>
+
+      {/* Loss Avoidance & Pricing Breakdown + 1-Click Green Flashing CTA */}
+      <div className="pt-6 space-y-5">
+        <div className="p-4 rounded-xl bg-[#EFEFED] border border-black/[0.07] space-y-2 text-[13px]">
+          <div className="flex items-center justify-between text-[#141413] font-medium">
+            <span className="inline-flex items-center gap-2">
+              <Truck className="w-4 h-4 text-[#15803D]" aria-hidden="true" />
+              <span>Free Express Delivery</span>
+            </span>
+            <span className="font-mono-tech text-[12px] text-[#15803D]">
+              <span className="line-through text-[#6B6B68] mr-1.5">$25</span>
+              FREE
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-[#141413] font-medium">
+            <span className="inline-flex items-center gap-2">
+              <PackageCheck className="w-4 h-4 text-[#15803D]" aria-hidden="true" />
+              <span>Free Wireless Charging Case</span>
+            </span>
+            <span className="font-mono-tech text-[12px] text-[#15803D]">
+              <span className="line-through text-[#6B6B68] mr-1.5">$79</span>
+              FREE
+            </span>
+          </div>
+          {config.includeGameApp && (
+            <div className="flex items-center justify-between text-[#141413] font-medium">
+              <span className="inline-flex items-center gap-2">
+                <Gamepad2 className="w-4 h-4 text-[#15803D]" aria-hidden="true" />
+                <span>Add-on Game App (Hawker Quest)</span>
+              </span>
+              <span className="font-mono-tech text-[12px] text-[#15803D]">
+                <span className="line-through text-[#6B6B68] mr-1.5">${GAME_APP_VALUE}</span>
+                INCLUDED
+              </span>
+            </div>
+          )}
+        </div>
+
         <div className="space-y-2 text-[13px]">
           <div className="flex justify-between text-[#5A5A56]">
             <span>
@@ -616,41 +715,61 @@ export const ConfiguratorPanel: React.FC<ConfiguratorPanelProps> = ({
               <span className="font-mono-tech text-[#141413]">+${pricing.ring}</span>
             </div>
           )}
-          <div className="flex justify-between text-[#5A5A56]">
-            <span>Express Shipping &amp; Charging Case</span>
-            <span className="text-[#2D6A4F] font-medium">Complimentary</span>
+          <div className="flex justify-between text-[#DC2626] font-medium">
+            <span>20% Limited Discount</span>
+            <span className="font-mono-tech">-${pricing.savingsAmount}</span>
           </div>
+
           <div className="pt-3 border-t border-black/[0.08] flex items-baseline justify-between">
-            <span className="font-display text-[15px] font-semibold text-[#141413]">Total</span>
-            <span className="font-display text-[22px] font-semibold text-[#141413] tabular-nums">
-              ${pricing.total}
+            <span className="font-display text-[15px] font-semibold text-[#141413]">
+              Total (20% Off)
             </span>
+            <div className="flex items-baseline gap-2.5">
+              <span className="font-mono-tech text-[15px] text-[#6B6B68] line-through">
+                ${pricing.originalTotal}
+              </span>
+              <span className="font-display text-[24px] font-bold text-[#DC2626] tabular-nums">
+                ${pricing.total}
+              </span>
+            </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="space-y-3">
+          {/* Primary Green Flashing Bold 1-Click Button */}
           <button
             type="button"
-            onClick={onAddToBag}
-            className="flex-1 h-12 px-6 rounded-xl bg-[#141413] hover:bg-[#2B2B29] text-[#F7F7F5] font-display text-[14px] font-semibold transition-colors whitespace-nowrap cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F7F7F5]"
+            onClick={onOneClickBuy}
+            className="w-full h-13 px-6 rounded-xl bg-[#16A34A] hover:bg-[#15803D] text-white font-display text-[15px] font-bold tracking-tight transition-colors whitespace-nowrap inline-flex items-center justify-center gap-2 shadow-sm cursor-pointer animate-buy-flash focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F7F7F5]"
           >
-            {justAdded ? 'Added to Bag' : `Add to Bag — $${pricing.total}`}
+            <Zap className="w-4 h-4 fill-current" aria-hidden="true" />
+            <span className="font-bold">Buy now with 1-Click — ${pricing.total}</span>
           </button>
 
-          <button
-            type="button"
-            onClick={onReset}
-            title="Reset configuration"
-            aria-label="Reset configuration"
-            className="h-12 px-4 rounded-xl border border-black/15 bg-transparent hover:bg-[#EAEAE6] text-[#5A5A56] hover:text-[#141413] transition-colors inline-flex items-center gap-1.5 text-[13px] font-medium whitespace-nowrap shrink-0 cursor-pointer"
-          >
-            <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
-            <span>Reset</span>
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={onAddToBag}
+              className="flex-1 h-11 px-5 rounded-xl bg-[#141413] hover:bg-[#2B2B29] text-[#F7F7F5] font-display text-[13px] font-semibold transition-colors whitespace-nowrap cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413]"
+            >
+              {justAdded ? 'Added to Bag' : `Add to Bag — $${pricing.total}`}
+            </button>
+
+            <button
+              type="button"
+              onClick={onReset}
+              title="Reset configuration"
+              aria-label="Reset configuration"
+              className="h-11 px-4 rounded-xl border border-black/15 bg-transparent hover:bg-[#EAEAE6] text-[#5A5A56] hover:text-[#141413] transition-colors inline-flex items-center gap-1.5 text-[13px] font-medium whitespace-nowrap shrink-0 cursor-pointer"
+            >
+              <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
+              <span>Reset</span>
+            </button>
+          </div>
         </div>
 
         <p className="text-[12px] text-[#6B6B68] leading-relaxed">
-          30-day home trial · 1-year hardware warranty · FSA &amp; HSA eligible on prescription configurations.
+          Includes free delivery, free charging case, 30-day home trial, and 1-year warranty.
         </p>
       </div>
     </div>
