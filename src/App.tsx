@@ -8,7 +8,7 @@ import { CartDrawer } from './components/CartDrawer';
 import { ConfiguratorPanel } from './components/ConfiguratorPanel';
 import { EcosystemHub } from './components/EcosystemHub';
 import { Footer } from './components/Footer';
-import { Header } from './components/Header';
+import { Header, PAGE_TABS, PageTab } from './components/Header';
 import { RingSizingModal } from './components/RingSizingModal';
 import { SpecsAndComparison } from './components/SpecsAndComparison';
 import { StageMode, StudioStage } from './components/StudioStage';
@@ -22,6 +22,7 @@ import {
 } from './data/glassesConfig';
 
 export default function App() {
+  const [activeTab, setActiveTab] = useState<PageTab>('selection');
   const [config, setConfig] = useState<ConfigurationState>(DEFAULT_CONFIG);
   const [stageMode, setStageMode] = useState<StageMode>('studio');
   const [bagItems, setBagItems] = useState<CartItem[]>([]);
@@ -37,6 +38,11 @@ export default function App() {
   } | null>(null);
 
   const totalBagCount = bagItems.reduce((sum, item) => sum + item.quantity, 0);
+
+  const handleSelectTab = (tab: PageTab) => {
+    setActiveTab(tab);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleAddToBag = () => {
     const pricing = calculatePrice(config);
@@ -110,12 +116,14 @@ export default function App() {
       includeGameApp: true,
     }));
     setStageMode('studio');
-    document.getElementById('selection')?.scrollIntoView({ behavior: 'smooth' });
+    handleSelectTab('selection');
   };
 
   return (
     <div id="top" className="min-h-screen flex flex-col bg-[#F7F7F5] text-[#141413]">
       <Header
+        activeTab={activeTab}
+        onSelectTab={handleSelectTab}
         bagCount={totalBagCount}
         onOpenBag={() => {
           setOneClickOrderSummary(null);
@@ -124,51 +132,98 @@ export default function App() {
       />
 
       <main className="flex-1">
-        {/* Primary Sticky Studio + Configurator Split */}
-        <section
-          id="selection"
-          className="max-w-[1360px] mx-auto px-6 md:px-10 pt-8 pb-16 md:pt-12 md:pb-24"
-        >
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
-            <div className="lg:col-span-7">
-              <StudioStage
-                config={config}
-                stageMode={stageMode}
-                onChangeStageMode={setStageMode}
-                totalPrice={calculatePrice(config).total}
-                onOneClickBuy={handleOneClickBuy}
-              />
-            </div>
-
-            <div className="lg:col-span-5">
-              <ConfiguratorPanel
-                config={config}
-                onChange={setConfig}
-                onReset={handleReset}
-                onAddToBag={handleAddToBag}
-                onOneClickBuy={handleOneClickBuy}
-                onOpenRingGuide={() => setIsRingGuideOpen(true)}
-                onSwitchStageMode={setStageMode}
-                justAdded={justAdded}
-              />
-            </div>
+        {/* Clean Segmented Tab Bar (Mobile + Quick Switcher) */}
+        <div className="max-w-[1360px] mx-auto px-6 md:px-10 pt-5">
+          <div
+            role="tablist"
+            aria-label="Page sections"
+            className="inline-flex flex-wrap items-center gap-1 p-1 bg-[#EAEAE6] rounded-xl border border-black/[0.06]"
+          >
+            {PAGE_TABS.map((tab) => {
+              const active = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => handleSelectTab(tab.id)}
+                  className={`px-4 py-2 text-[13px] font-medium rounded-lg transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                    active
+                      ? 'bg-white text-[#141413] shadow-xs font-semibold'
+                      : 'text-[#5A5A56] hover:text-[#141413]'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
           </div>
-        </section>
+        </div>
 
-        {/* Emotion, Status, Identity, Recognition & Stickiness */}
-        <EcosystemHub onSelectBtsEdition={handleSelectBtsEdition} />
+        {/* Tab 1: Even G2 Studio + Configurator */}
+        {activeTab === 'selection' && (
+          <section
+            id="selection"
+            role="tabpanel"
+            aria-label="Even G2 Configurator"
+            className="max-w-[1360px] mx-auto px-6 md:px-10 pt-6 pb-16 md:pt-8 md:pb-20"
+          >
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+              <div className="lg:col-span-7">
+                <StudioStage
+                  config={config}
+                  stageMode={stageMode}
+                  onChangeStageMode={setStageMode}
+                  totalPrice={calculatePrice(config).total}
+                  onOneClickBuy={handleOneClickBuy}
+                />
+              </div>
 
-        {/* Below-the-Fold Geometry & Optical Specs */}
-        <SpecsAndComparison
-          selectedFrameId={config.frameId}
-          onSelectFrame={(frameId) => {
-            setConfig((prev) => ({ ...prev, frameId }));
-            setStageMode('studio');
-          }}
+              <div className="lg:col-span-5">
+                <ConfiguratorPanel
+                  config={config}
+                  onChange={setConfig}
+                  onReset={handleReset}
+                  onAddToBag={handleAddToBag}
+                  onOneClickBuy={handleOneClickBuy}
+                  onOpenRingGuide={() => setIsRingGuideOpen(true)}
+                  onSwitchStageMode={setStageMode}
+                  justAdded={justAdded}
+                />
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Tab 2 & Tab 3: Ambassador Showcase & Community Ecosystem (mounted to preserve state) */}
+        <EcosystemHub
+          activeView={
+            activeTab === 'ambassador'
+              ? 'ambassador'
+              : activeTab === 'community'
+              ? 'community'
+              : null
+          }
+          onSelectBtsEdition={handleSelectBtsEdition}
         />
+
+        {/* Tab 4: Optics, Frame Geometry & Included Kit */}
+        {activeTab === 'specs' && (
+          <div role="tabpanel" aria-label="Optics and Fit">
+            <SpecsAndComparison
+              selectedFrameId={config.frameId}
+              onSelectFrame={(frameId) => {
+                setConfig((prev) => ({ ...prev, frameId }));
+                setStageMode('studio');
+                handleSelectTab('selection');
+              }}
+            />
+          </div>
+        )}
       </main>
 
-      <Footer />
+      <Footer onSelectTab={handleSelectTab} />
 
       <CartDrawer
         isOpen={isBagOpen}

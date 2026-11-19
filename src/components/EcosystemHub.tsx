@@ -10,10 +10,14 @@ import {
 } from '../data/glassesConfig';
 
 interface EcosystemHubProps {
+  activeView: 'ambassador' | 'community' | null;
   onSelectBtsEdition: () => void;
 }
 
-export const EcosystemHub: React.FC<EcosystemHubProps> = ({ onSelectBtsEdition }) => {
+export const EcosystemHub: React.FC<EcosystemHubProps> = ({
+  activeView,
+  onSelectBtsEdition,
+}) => {
   const [leaderboardPeriod, setLeaderboardPeriod] = useState<'week' | 'all'>('week');
   const [leaderboard, setLeaderboard] = useState<HawkerLeaderEntry[]>(INITIAL_HAWKER_LEADERBOARD);
   const [selectedCentre, setSelectedCentre] = useState('Maxwell Food Centre');
@@ -108,11 +112,15 @@ export const EcosystemHub: React.FC<EcosystemHubProps> = ({ onSelectBtsEdition }
   };
 
   return (
-    <div className="max-w-[1360px] mx-auto px-6 md:px-10">
+    <div
+      className={
+        activeView ? 'max-w-[1360px] mx-auto px-6 md:px-10' : 'hidden'
+      }
+    >
       {/* Section: Emotion — BTS Global Brand Ambassador Editorial Showcase */}
       <section
         id="ambassador"
-        className="py-16 md:py-24 border-t border-black/[0.08]"
+        className={activeView === 'ambassador' ? 'pt-8 pb-16 md:pt-12 md:pb-20' : 'hidden'}
         aria-labelledby="ambassador-heading"
       >
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch">
@@ -189,7 +197,7 @@ export const EcosystemHub: React.FC<EcosystemHubProps> = ({ onSelectBtsEdition }
       {/* Section: Identity, Status Leaderboard, ARMY Badges & Friends Streak */}
       <section
         id="community"
-        className="py-16 md:py-24 border-t border-black/[0.08]"
+        className={activeView === 'community' ? 'pt-8 pb-16 md:pt-12 md:pb-20' : 'hidden'}
         aria-labelledby="community-heading"
       >
         <div className="max-w-2xl mb-12">

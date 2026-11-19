@@ -392,24 +392,24 @@ export const INITIAL_FRIENDS_STREAK: FriendStreakPeer[] = [
 
 export const TECHNICAL_SPECS = [
   {
-    category: 'Optical Engine',
-    title: 'Dual Micro-LED Waveguide',
-    detail: 'Monochrome green 640 × 200 px projection per eye at 1,000 nits peak brightness with zero outward light leakage.',
+    category: 'Video Recording',
+    title: 'Stabilized 4K POV Video Capture',
+    detail: 'Flush-mounted micro-prism optical sensor records crisp 4K 30fps hands-free POV video with instant temple-tap or Even R1 ring trigger.',
   },
   {
-    category: 'Chassis & Hinge',
-    title: 'Magnesium-Titanium Alloy',
-    detail: 'Sandblasted biocompatible frame front paired with flexible beta-titanium temples and patented screwless hinge.',
+    category: '10× Zoom & VR',
+    title: '10× Zoom Focus with Spatial VR Effects',
+    detail: 'Precision 10× hybrid optical-digital zoom focus paired with real-time stereoscopic VR spatial overlays, depth parallax, and 3D horizon tracking.',
+  },
+  {
+    category: 'Optical Engine',
+    title: 'Dual Micro-LED Waveguide',
+    detail: 'Monochrome green 640 × 200 px projection per eye at 1,000 nits peak brightness with private anti-leak optics.',
   },
   {
     category: 'Power & Case',
     title: '1.5-Day Continuous Runtime',
     detail: 'Dual 80 mAh temple cells supported by a complimentary USB-C magnetic charging case holding 2.5 full recharges.',
-  },
-  {
-    category: 'Acoustics & Control',
-    title: 'Dual-Mic Beamforming + Touch',
-    detail: 'Capacitive temple touchbars for instant Teleprompt, Translate, and Even Hawker Quest control alongside Even R1 ring gestures.',
   },
 ];
 

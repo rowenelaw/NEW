@@ -16,7 +16,7 @@ export const SpecsAndComparison: React.FC<SpecsAndComparisonProps> = ({
       {/* Section 1: Frame Geometry Comparison */}
       <section
         id="geometry"
-        className="py-16 md:py-24 border-t border-black/[0.08]"
+        className="pt-8 pb-16 md:pt-12 md:pb-20"
         aria-labelledby="geometry-heading"
       >
         <div className="max-w-xl mb-12">
@@ -159,7 +159,7 @@ export const SpecsAndComparison: React.FC<SpecsAndComparisonProps> = ({
               Optical Architecture
             </h2>
             <p className="text-[15px] text-[#5A5A56] mt-2 leading-relaxed max-w-xl">
-              Zero cameras, zero external speakers. Only crisp, private contextual information floating effortlessly in your peripheral field of view.
+              Built-in 4K POV video recording capability, precision 10× zoom focus, and spatial VR lens effects seamlessly integrated into everyday optical eyewear.
             </p>
 
             <div className="mt-8 divide-y divide-black/[0.08] border-t border-b border-black/[0.08]">

@@ -86,9 +86,23 @@ export const ConfiguratorPanel: React.FC<ConfiguratorPanelProps> = ({
           </span>
         </div>
 
-        <p className="text-[14px] text-[#5A5A56] mt-2.5 leading-relaxed">
-          Display smart glasses engineered into an ultra-light optical frame. Includes complimentary wireless charging case and express shipping.
-        </p>
+        <ul className="mt-3.5 space-y-2 text-[13.5px] text-[#5A5A56] leading-snug list-disc pl-4 marker:text-[#141413]">
+          <li>
+            <strong className="font-semibold text-[#141413]">Capture Life Hands-Free in 4K POV</strong> — Instant temple-tap video recording turns every unscripted moment into crisp, stabilized footage.
+          </li>
+          <li>
+            <strong className="font-semibold text-[#141413]">Lock On with 10× Hybrid Zoom Focus</strong> — Bring distant stages, street signs, and fine details into razor-sharp focus from afar.
+          </li>
+          <li>
+            <strong className="font-semibold text-[#141413]">Step Inside Spatial VR Effects</strong> — Real-time stereoscopic depth overlays and waveguide HUD visuals blend effortlessly into your field of view.
+          </li>
+          <li>
+            <strong className="font-semibold text-[#141413]">Featherlight 36 g All-Day Comfort</strong> — Crafted in magnesium-titanium so smart optics wear like classic everyday luxury eyewear.
+          </li>
+          <li>
+            <strong className="font-semibold text-[#141413]">Complimentary Launch Extras Included</strong> — Ships with a free wireless charging case ($79 value) and free express delivery.
+          </li>
+        </ul>
       </div>
 
       {/* 01. Frame Style */}
