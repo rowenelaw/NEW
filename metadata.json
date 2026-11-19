@@ -1,0 +1,6 @@
+{
+  "name": "Even Realities — Smart Glasses Selection",
+  "description": "Interactive configurator for Even G2 display smart glasses, custom optical prescription lenses, magnetic sun clip-ons, and the Even R1 smart ring.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
